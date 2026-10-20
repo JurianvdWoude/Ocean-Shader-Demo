@@ -8,6 +8,19 @@ The shader also includes depth-dependent water color and transparency, view-depe
 ![Gerstner ocean shader](screenshots/ocean.gif)
 Image 1: Low-res gif of the ocean shader
 
+## How to run
+
+A lightweight browser demo is included to show the waves without launching the Godot game. It uses **Vite + Three.js** and deliberately contains no player physics or game-specific systems.
+
+```bash
+npm install
+npm run dev
+```
+
+Open the local URL printed by Vite. **Left-drag** to orbit, **right-drag** to pan, and use the **mouse wheel** to zoom.
+
+> **Rendering differences:** The browser shader reproduces the core wave and Jacobian calculations, but not Godot's full PBR material model. Its procedural reflections, sun glint, crest-biased foam, and depth prepass are showcase-specific approximations. The browser demo's stronger turquoise-green SSS color is an artistic adjustment, not a change to the underlying wave mathematics.
+
 ## Features
 
 - **Six directional Gerstner waves** with configurable amplitudes, wavelengths, speeds, directions, and steepness.
@@ -138,21 +151,6 @@ For the green glow, the shader combines the direction of Gerstner horizontal dis
 ![No reflections ocean shader](screenshots/noreflection.png)
 ![Max reflections ocean shader](screenshots/maxreflection.png)
 Image 3 & 4: Low reflections vs max reflections
-
-## Three.js showcase
-
-A lightweight browser demo is included to show the waves without launching the Godot game. It uses **Vite + Three.js** and deliberately contains no player physics or game-specific systems.
-
-```bash
-npm install
-npm run dev
-```
-
-Open the local URL printed by Vite. **Left-drag** to orbit, **right-drag** to pan, and use the **mouse wheel** to zoom.
-
-The demo uses a **16 × 16 plane with 64 × 64 subdivisions** (4,225 vertices), six main waves, three detail waves, and a gently sloping seabed. Its GLSL is split into `ocean.vert.glsl` and `ocean.frag.glsl`; shared `varying` values transmit interpolated vertex results to the fragment shader.
-
-> **Rendering differences:** The browser shader reproduces the core wave and Jacobian calculations, but not Godot's full PBR material model. Its procedural reflections, sun glint, crest-biased foam, and depth prepass are showcase-specific approximations. The browser demo's stronger turquoise-green SSS color is an artistic adjustment, not a change to the underlying wave mathematics.
 
 ## Parameters to experiment with
 

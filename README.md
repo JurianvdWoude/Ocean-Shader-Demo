@@ -6,7 +6,7 @@ A procedural ocean shader originally developed in **Godot 4**, using **Gerstner 
 The shader also includes depth-dependent water color and transparency, view-dependent Fresnel reflections, and a stylized subsurface-scattering (SSS) effect. A small **Three.js** showcase demonstrates the effect outside Godot.
 
 ![Gerstner ocean shader](screenshots/ocean.gif)
-Image 1: Low-res gif of the ocean shader
+_Image 1: Low-res gif of the ocean shader_
 
 ## How to run
 
@@ -37,28 +37,28 @@ Open the local URL printed by Vite. **Left-drag** to orbit, **right-drag** to pa
 
 ### 1. Gerstner wave displacement
 
-Each wave is defined by an amplitude \(A\), wavelength \(\lambda\), normalized horizontal direction \(\mathbf d\), speed \(c\), and steepness \(Q\). Its wavenumber and phase are
+Each wave is defined by an amplitude $(A)$, wavelength $(\lambda)$, normalized horizontal direction $(\mathbf d)$, speed $(c)$, and steepness $(Q)$. Its wavenumber and phase are
 
-\[
+$$
  k = \frac{2\pi}{\lambda}, \qquad
  \theta = k(\mathbf d\cdot\mathbf p + ct),
-\]
+$$
 
-where \(\mathbf p=(x,z)\) is the original horizontal vertex position. (The positive sign on \(ct\) is the convention used in this implementation.)
+where $(\mathbf p=(x,z))$ is the original horizontal vertex position. (The positive sign on $(ct)$ is the convention used in this implementation.)
 
 For each main wave, the shader accumulates vertical displacement and a horizontal offset:
 
-\[
+$$
  h \mathrel{+}= A\sin\theta,
  \qquad
  \mathbf D \mathrel{+}= QA\mathbf d\cos\theta.
-\]
+$$
 
 The final vertex position is approximately
 
-\[
+$$
  \mathbf P'=(x+D_x,\;y+h,\;z+D_z).
-\]
+$$
 
 Summing waves with different directions and wavelengths produces a choppy, irregular surface without simulation grids or precomputed animation textures. The three short-wavelength detail waves additionally contribute height and derivatives, but **not horizontal vertex displacement** in this implementation.
 
@@ -66,17 +66,17 @@ Summing waves with different directions and wavelengths produces a choppy, irreg
 
 Rather than using the original flat plane normal, the shader accumulates the partial derivatives of wave height:
 
-\[
+$$
  \frac{\partial h}{\partial x} = \sum_i A_i k_i d_{i,x}\cos\theta_i,
  \qquad
  \frac{\partial h}{\partial z} = \sum_i A_i k_i d_{i,z}\cos\theta_i.
-\]
+$$
 
 An approximate surface normal is then calculated as
 
-\[
+$$
  \mathbf N \approx \operatorname{normalize}\left(-\frac{\partial h}{\partial x},\;1,\;-\frac{\partial h}{\partial z}\right).
-\]
+$$
 
 This captures changing wave slopes for lighting. It is an **approximation**: the exact Gerstner normal would also include derivatives of the horizontal displacement, for example by taking the cross product of the full displaced-surface tangents.
 
@@ -84,30 +84,30 @@ This captures changing wave slopes for lighting. It is an **approximation**: the
 
 The foam is driven primarily by *horizontal surface compression*, rather than simply placing white foam at a particular wave height.
 
-Let \(\mathbf D=(D_x,D_z)\) be the horizontal displacement field. The horizontal mapping is \(\mathbf p' = \mathbf p + \mathbf D(\mathbf p)\), whose Jacobian is
+Let $(\mathbf D=(D_x,D_z))$ be the horizontal displacement field. The horizontal mapping is $(\mathbf p' = \mathbf p + \mathbf D(\mathbf p))$, whose Jacobian is
 
-\[
+$$
  J =
  \begin{vmatrix}
  1+\frac{\partial D_x}{\partial x} & \frac{\partial D_x}{\partial z}\\
  \frac{\partial D_z}{\partial x} & 1+\frac{\partial D_z}{\partial z}
  \end{vmatrix}.
-\]
+$$
 
 Expanding its determinant gives
 
-\[
+$$
  \det J =
  \left(1+\frac{\partial D_x}{\partial x}\right)
  \left(1+\frac{\partial D_z}{\partial z}\right)
  -\frac{\partial D_x}{\partial z}\frac{\partial D_z}{\partial x}.
-\]
+$$
 
 For a single wave, each derivative receives a contribution proportional to
 
-\[
+$$
  -QAk\sin\theta\,d_i d_j.
-\]
+$$
 
 When the determinant falls below an adjustable threshold, the shader creates a foam mask:
 
@@ -121,7 +121,7 @@ The effect is an **artistic approximation of foam associated with steep, compres
 
 
 ![Ocean shader peak](screenshots/peak.png)
-Image 2: Example of a foam peak in the upper-left
+_Image 2: Example of a foam peak in the upper-left_
 
 ### 4. Depth-dependent water color
 
@@ -137,11 +137,11 @@ The browser showcase supplies its own seabed depth texture using an offscreen re
 
 ### 5. Fresnel reflections and subsurface-style glow
 
-The Fresnel term is calculated from the surface normal \(\mathbf N\) and the direction from the water toward the camera \(\mathbf V\):
+The Fresnel term is calculated from the surface normal $(\mathbf N)$ and the direction from the water toward the camera $(\mathbf V)$:
 
-\[
+$$
  F = \left(1-\operatorname{clamp}(\mathbf N\cdot\mathbf V,0,1)\right)^p.
-\]
+$$
 
 This increases the reflection tint toward grazing viewing angles. The **Godot shader** passes its material color and roughness into Godot's lighting pipeline; the **Three.js showcase** instead uses a lightweight procedural sky tint and a restrained sun-glint approximation.
 
@@ -150,7 +150,7 @@ For the green glow, the shader combines the direction of Gerstner horizontal dis
 
 ![No reflections ocean shader](screenshots/noreflection.png)
 ![Max reflections ocean shader](screenshots/maxreflection.png)
-Image 3 & 4: Low reflections vs max reflections
+_Image 3 & 4: Low reflections vs max reflections_
 
 ## Parameters to experiment with
 

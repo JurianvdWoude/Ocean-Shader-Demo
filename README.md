@@ -6,6 +6,7 @@ A procedural ocean shader originally developed in **Godot 4**, using **Gerstner 
 The shader also includes depth-dependent water color and transparency, view-dependent Fresnel reflections, and a stylized subsurface-scattering (SSS) effect. A small **Three.js** showcase demonstrates the effect outside Godot.
 
 ![Gerstner ocean shader](screenshots/ocean.gif)
+
 _Image 1: Low-res gif of the ocean shader_
 
 ## How to run
@@ -66,17 +67,17 @@ Summing waves with different directions and wavelengths produces a choppy, irreg
 
 Rather than using the original flat plane normal, the shader accumulates the partial derivatives of wave height:
 
-$$
+```math
  \frac{\partial h}{\partial x} = \sum_i A_i k_i d_{i,x}\cos\theta_i,
  \qquad
  \frac{\partial h}{\partial z} = \sum_i A_i k_i d_{i,z}\cos\theta_i.
-$$
+```
 
 An approximate surface normal is then calculated as
 
-$$
+```math
  \mathbf N \approx \operatorname{normalize}\left(-\frac{\partial h}{\partial x},\;1,\;-\frac{\partial h}{\partial z}\right).
-$$
+```
 
 This captures changing wave slopes for lighting. It is an **approximation**: the exact Gerstner normal would also include derivatives of the horizontal displacement, for example by taking the cross product of the full displaced-surface tangents.
 
@@ -138,10 +139,9 @@ The browser showcase supplies its own seabed depth texture using an offscreen re
 ### 5. Fresnel reflections and subsurface-style glow
 
 The Fresnel term is calculated from the surface normal $(\mathbf N)$ and the direction from the water toward the camera $(\mathbf V)$:
-
-$$
+```math
  F = \left(1-\operatorname{clamp}(\mathbf N\cdot\mathbf V,0,1)\right)^p.
-$$
+```
 
 This increases the reflection tint toward grazing viewing angles. The **Godot shader** passes its material color and roughness into Godot's lighting pipeline; the **Three.js showcase** instead uses a lightweight procedural sky tint and a restrained sun-glint approximation.
 

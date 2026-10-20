@@ -139,6 +139,7 @@ The browser showcase supplies its own seabed depth texture using an offscreen re
 ### 5. Fresnel reflections and subsurface-style glow
 
 The Fresnel term is calculated from the surface normal $(\mathbf N)$ and the direction from the water toward the camera $(\mathbf V)$:
+
 $$
  F = \left(1-\mathrm{clamp}(\mathbf N\cdot\mathbf V,0,1)\right)^p.
 $$
